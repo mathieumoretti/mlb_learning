@@ -7,6 +7,8 @@ import logging
 import io
 import requests
 import csv
+import datetime
+import time
 
 file_name = os.path.basename(sys.argv[0])
 log_name = file_name.replace("py", "log")
@@ -25,6 +27,11 @@ file_handler.setLevel(logging.DEBUG)
 logger.addHandler(file_handler)
 logger.addHandler(stream_handler)
 
+start = time.time()
+
+
+#Very simple predicitve model approach : https://medium.freecodecamp.org/a-beginners-guide-to-training-and-deploying-machine-learning-models-using-python-48a313502e5a
+#maybe feautures = average of stats last 3 game and label = runs + rbi
 
 
 #Everything below is based on : https://www.reddit.com/r/Sabermetrics/comments/99yvdc/statsapi_working_documentation/
@@ -32,9 +39,9 @@ logger.addHandler(stream_handler)
 
 #NHL api seems better documented and very similar : https://github.com/dword4/nhlapi
 
-list_of_dates = ["09/15/2017","09/16/2017","01/19/2017","09/17/2017","09/18/2017","09/19/2017"]
+#list_of_dates = ["09/15/2017","09/16/2017","01/19/2017","09/17/2017","09/18/2017","09/19/2017"]
 BASE_API_URL = "http://statsapi.mlb.com:80/api/v1/"
-
+start_date = "09/09/2018"
 
 
 #this method makes one call per date returning all the IDs of the game played that day
@@ -103,16 +110,24 @@ def store_stats_in_tsv(date,game_stats):
 				writer.writerow(stats_row)
 			
 
-
+def get_dates(date_one,date_two=datetime.datetime.today().strftime('%m/%d/%Y')):# gets all dates from date_one till now,second date can be overwritten
+	date_list =[]
+	d1 = datetime.datetime.strptime(date_one, '%m/%d/%Y')
+	d2 = datetime.datetime.strptime(date_two, '%m/%d/%Y')
+	diff = d2 - d1
+	for i in range(diff.days + 1):
+		date_list.append(str((d1 + datetime.timedelta(i)).strftime('%m/%d/%Y')))
+	return date_list
 
 
 def main():
-	game_ids = return_game_ids(list_of_dates)#call a function that returns a list with all dates for the range we want here to gather mass data
+	game_ids = return_game_ids(get_dates(start_date))
 	for ids in game_ids.keys():
 		store_stats_in_tsv(game_ids[ids],return_player_stats_single_game(ids))
 main()
 
-
+end = time.time()
+logger.info("Time of execution : {}".format(end - start))
 
 
 
