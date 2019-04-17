@@ -31,8 +31,6 @@ file_handler.setLevel(logging.DEBUG)
 logger.addHandler(file_handler)
 logger.addHandler(stream_handler)
 tf.logging.set_verbosity(tf.logging.INFO)
-start = time.time()
-
 
 #Very simple predicitve model approach : https://medium.freecodecamp.org/a-beginners-guide-to-training-and-deploying-machine-learning-models-using-python-48a313502e5a
 # https://towardsdatascience.com/predicting-premier-league-odds-from-ea-player-bfdb52597392
@@ -41,7 +39,7 @@ start = time.time()
 class DNN:
 
 	def __init__(self,num_of_games):#Class instantiates on the training and testing file 
-		self.num_of_games = num_of_games
+		self.num_of_games = int(num_of_games)
 		self.model_dir = 'model_{}'.format(self.num_of_games)
 
 	def clean_data(self):
@@ -172,18 +170,6 @@ def evaluate_scores(probability_list,hits):
 				accuracy_counter = accuracy_counter + 1
 	logger.info("Accuracy when not predicting 0 : " + str(accuracy_counter_1/counter_1))
 	logger.info("Accuracy when predicting 0 : " + str(accuracy_counter/counter))
-
-
-
-
-
-
-
-end = time.time()
-logger.info("Time of execution : {}".format(end - start))
-
-
-
 
 
 def return_data_P_one_row(dct):

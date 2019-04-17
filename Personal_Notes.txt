@@ -1,0 +1,8 @@
+Simon 4/17/2019
+
+As of right now i have tried:
+3 games to learn from before each game + optmizier and no optmizer
+8 games to learn from before each game + optmizier and no optmizer
+Everything is pretty bad.
+
+I think there is an issue with the way im cleaning the data im making it more complicated than it should be...
