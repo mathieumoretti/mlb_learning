@@ -47,14 +47,12 @@ class DNN:
 		counter = 0
 		files_size = len(os.listdir("./data"))
 		training_lenght = int(files_size*0.9)
-
 		for filename in os.listdir("./data"):
 			counter = counter + 1
+			file = "./data/{}".format(filename)
 			if(counter < training_lenght):
-				file = "./data/{}".format(filename)
 				read_data_one_file(self.num_of_games,file,"training_data_{}".format(self.num_of_games))
 			else:
-				file = "./data/{}".format(filename)
 				read_data_one_file(self.num_of_games,file,"testing_data_{}".format(self.num_of_games))
 		logger.info("Finished creating clean data .....")
 		len_hitter_training = row_count("H_training_data_{}.csv".format(self.num_of_games))
@@ -192,7 +190,7 @@ def return_data_P_one_header(dct,lenght):
 
 def return_data_H_one_row(dct):
 	data_list = []
-	for i in dct:
+	for i in sorted(dct):
 		if(i != "date" and i != "position" and i != "note"and i != "gamesPlayed"and i):
 			data_list.append(dct[i])
 	return data_list
@@ -203,7 +201,7 @@ def return_data_H_one_header(dct,lenght):
 	temp_list =[]
 	for counter in range(lenght):
 		temp_list = []
-		for i in dct:
+		for i in sorted(dct):
 			if(i != "date" and i != "position" and i != "note"and i != "gamesPlayed"and i):
 				temp_list.append(i+str(counter))
 		header_list = header_list + temp_list
@@ -252,7 +250,10 @@ def read_data_one_file(lenght,filename,output_file):
 				return
 			else:
 				position = "H"
+				if(len(dct) > 26):
+					return
 				data_list = return_data_H_one_row(dct)
+				#print("data_list" + str(data_list))
 				try:
 					for i in data_list:
 						i = int(float(i))
@@ -275,15 +276,18 @@ def read_data_one_file(lenght,filename,output_file):
 						logger.error("rbi or runs were not in data")
 						return
 	
-	logger.info("Adding data for filename : {}  ".format(filename))
 	if(position == "H"):
 		if(not os.path.isfile("{}_{}.csv".format(position,output_file))):
 			logger.info("Adding header row for hitters")
 			with open("{}_{}.csv".format(position,output_file),'w+',newline='') as csvFile:
+				logger.info("Writing data for {}".format(filename))
 				writer = csv.writer(csvFile)
 				writer.writerow(header_list + ["official_result"])
+				for i in range(len(final_list)):
+					writer.writerow(final_list[i][0] + [final_list[i][1]]) 
 		else:
 			with open("{}_{}.csv".format(position,output_file), 'a',newline='') as csvFile:
+				logger.info("Writing data for {}".format(filename))
 				writer = csv.writer(csvFile)
 				for i in range(len(final_list)):
 					writer.writerow(final_list[i][0] + [final_list[i][1]]) 
