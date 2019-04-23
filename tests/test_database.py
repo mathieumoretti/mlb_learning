@@ -1,9 +1,3 @@
-
-# content of test_sample.py
-def test_database():
-    someVar = 2
-    assert 2 == someVar
-
 import datetime
 import os
 from os import walk
@@ -140,27 +134,6 @@ def test_database():
 
 
     users = query_users()
-    #if len(users) == 0:
-    #    populate_database()
-
-    #users = query_users()
-    #for user in users:
-    #    print(f'{user.name} has an {user.mobile.model} with number {user.mobile.number}')
-
-    #someVar = 2
-    #assert 2 == someVar
-
-if __name__ == "__main__":
-    test_database()
 
 
 
-        #d = dict(zip(categories_list, values))
-        #statline = {stat_header[x]: stat_header[x] for x in range(0, len(gamestats) - 1)}
-        #stat = Statline()
-        #stat.fill(statline)
-
-        #gamelog = Gamelog(log[0], log[1], player, )
-        #gamelog.date = log[0]
-        #gamelog.position = log[1]
-        #gamestats = log[2:]
