@@ -1,22 +1,46 @@
+import datetime
+import os
+from os import walk
+import sys
+
+script_dir = os.path.dirname(__file__) #<-- absolute dir the script is in
+root_dir = os.path.join(script_dir, '..')
+data_path = os.path.join(root_dir, 'data')
+
+sys.path.append(root_dir)
+
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import Column, String, Integer, Table, ForeignKey
 from sqlalchemy.orm import relationship
+
+
+
 db_uri = 'sqlite:///db.sqlite_test'
 engine = create_engine(db_uri)
 # use session_factory() to get a new Session
 _SessionFactory = sessionmaker(bind=engine)
 
-Base = declarative_base()
 
+from models import Categories
+from models import Player
+from models import Gamelog
+from models import Statline
+from database import DataPlayer
+from database import DataGamelog
+from database import DataStatline
+from database import DatabaseFactory
+
+
+some_base = DatabaseFactory.Base
 
 def session_factory():
-    Base.metadata.create_all(engine)
+    some_base.metadata.create_all(engine)
     return _SessionFactory()
 
 
-class Mobile(Base):
+class Mobile(some_base): #gamelog
     __tablename__ = 'mobile'
 
     id = Column(Integer, primary_key=True)
@@ -29,7 +53,7 @@ class Mobile(Base):
         self.number = number
         self.owner = owner
 
-class User(Base):
+class User(some_base): #statline
     __tablename__ = 'user'
 
     id = Column(Integer, primary_key=True)
@@ -71,13 +95,66 @@ def query_mobiles():
 
 
 def test_database():
-    users = query_users()
-    if len(users) == 0:
-        populate_database()
+
+    #category = Categories.HITS
+
+    ## A default model
+    #stat1 =  Statline()
+    #statistics = []
+    #statistics.append(stat1)
+
+    #data_statline = DataStatline(stat1)
+
+    #aDate = datetime.date(1900,1,1)
+
+    #gamelog1 = Gamelog()
+    #gamelog1.date = aDate
+    #gamelog1.position = "P"
+    #gamelog1.stats = stat1
+
+    #data_gamelog = DataGamelog(gamelog1.date, gamelog1.position, data_statline)
+
+    #gamelogs = []
+    #gamelogs.append(gamelog1)
+
+    #player1 = Player()
+    #player1.name = "James Bond"
+    #player1.espn_id = "007"
+    #player1.game_logs = gamelogs
+
+    #data_player1 = DataPlayer(player1.name,  player1.espn_id)
+
+    #player2 = Player()
+    #player2.name = "Alec Trevalian"
+    #player2.espn_id = "006"
+    #player2.game_logs = gamelogs
+
+    #data_player2 = DataPlayer(player2.name,  player2.espn_id)
+
+
 
     users = query_users()
-    for user in users:
-        print(f'{user.name} has an {user.mobile.model} with number {user.mobile.number}')
+    #if len(users) == 0:
+    #    populate_database()
 
-    someVar = 2
-    assert 2 == someVar
+    #users = query_users()
+    #for user in users:
+    #    print(f'{user.name} has an {user.mobile.model} with number {user.mobile.number}')
+
+    #someVar = 2
+    #assert 2 == someVar
+
+if __name__ == "__main__":
+    test_database()
+
+
+
+        #d = dict(zip(categories_list, values))
+        #statline = {stat_header[x]: stat_header[x] for x in range(0, len(gamestats) - 1)}
+        #stat = Statline()
+        #stat.fill(statline)
+
+        #gamelog = Gamelog(log[0], log[1], player, )
+        #gamelog.date = log[0]
+        #gamelog.position = log[1]
+        #gamestats = log[2:]

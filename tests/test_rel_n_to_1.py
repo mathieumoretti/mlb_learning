@@ -1,79 +1,84 @@
+import datetime
+import os
+from os import walk
+import sys
+
+script_dir = os.path.dirname(__file__) #<-- absolute dir the script is in
+root_dir = os.path.join(script_dir, '..')
+data_dir = os.path.join(root_dir, 'data')
+
+sys.path.append(root_dir)
+
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import Column, String, Integer, Table, ForeignKey
 from sqlalchemy.orm import relationship
-db_uri = 'sqlite:///db.sqlite_test'
-engine = create_engine(db_uri)
+
+from models import Gamelog
+from models import Player
+
+from database import DataGamelog
+from database import DataPlayer
+
+from database import DatabaseFactory
+
+
+
+database_filename = 'db.sqlite_test'
+database_dir = os.path.join(data_dir, 'database')
+database_path = os.path.join(database_dir, database_filename)
+db_uri =  os.path.join('sqlite:////', os.path.abspath(database_path))
+db_uri_rel =  os.path.join('sqlite:///', database_filename)
+if os.path.exists(database_filename):
+    os.remove(database_filename)
+
+engine = create_engine(db_uri_rel)
+
 # use session_factory() to get a new Session
 _SessionFactory = sessionmaker(bind=engine)
 
-Base = declarative_base()
+Base = DatabaseFactory.Base
 
 
 def session_factory():
     Base.metadata.create_all(engine)
     return _SessionFactory()
 
-#Player
-class ProjectManager(Base):
-    __tablename__ = 'project_manager'
-
-    id = Column(Integer, primary_key=True)
-    name = Column(String)
-    projects = relationship("Project", back_populates="project_manager")
-
-    def __init__(self, name):
-        self.name = name
-#Gamelog
-class Project(Base):
-    __tablename__ = 'project'
-
-    id = Column(Integer, primary_key=True)
-    title = Column(String)
-    description = Column(String)
-    #player_id
-    project_manager_id = Column(Integer, ForeignKey('project_manager.id'))
-    project_manager = relationship("ProjectManager", back_populates="projects")
-
-    def __init__(self, title, description, project_manager):
-        self.title = title
-        self.description = description
-        self.project_manager = project_manager
-
-
 def populate_database():
     session = session_factory()
 
-    bruno = ProjectManager("Bruno Krebs")
-    john = ProjectManager("John Doe")
 
-    todo = Project("To-Do List", "Let's help people accomplish their tasks", bruno)
-    moneyfy = Project("Moneyfy", "Best app to manage personal finances", john)
-    questionmark = Project("QuestionMark", "App that simulates technical exams", bruno)
-    blog = Project("NewBlog", "New blog engine that solves all issues", john)
+    player1 = Player("James Bond", "007")
+    data_player1 = DataPlayer(player1.name,  player1.espn_id)
 
-    session.add(todo)
-    session.add(moneyfy)
-    session.add(questionmark)
-    session.add(blog)
+    gamelog1 = Gamelog(datetime.date(1900,1,1),"P")
+    gamelog1.player = player1
+    gamelog2 = Gamelog(datetime.date(1900,1,2),"P")
+    gamelog2.player = player1
+
+    data_gamelog1 = DataGamelog(gamelog1.date, gamelog1.position, None, data_player1)
+    data_gamelog2 = DataGamelog(gamelog2.date, gamelog2.position, None, data_player1)
+
+    session.add(data_gamelog1)
+    session.add(data_gamelog2)
 
     session.commit()
     session.close()
 
 
-def query_projects():
+def query_gamelogs():
     session = session_factory()
-    projects_query = session.query(Project)
+    gamelogs_query = session.query(DataGamelog)
     session.close()
-    return projects_query.all()
+    return gamelogs_query.all()
 
 
 if __name__ == "__main__":
-    projects = query_projects()
-    if len(projects) == 0:
+    gamelogs = query_gamelogs()
+    if len(gamelogs) == 0:
         populate_database()
 
-    projects = query_projects()
-    for project in projects:
-        print(f'"{project.title}" is managed by {project.project_manager.name}')
+    gamelogs = query_gamelogs()
+    for gamelog in gamelogs:
+        print(f'"{gamelog.date}" is managed by {gamelog.player.name}')

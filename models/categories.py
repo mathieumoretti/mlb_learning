@@ -1,0 +1,61 @@
+from .category import Category
+
+class Categories:
+    AIR_OUTS =                  Category("airOuts")
+    AT_BATS =                   Category("atBats")
+    BALLS =                     Category("balls")
+    BASE_ON_BALLS =             Category("baseOnBalls")
+    BATTERS_FACED =             Category("battersFaced")
+    BLOWN_SAVES =               Category("blownSaves")
+    CATCHERS_INTERFERENCE =     Category("catchersInterference")
+    CAUGHT_STEALING =           Category("caughtStealing")
+    COMPLETE_GAMES =            Category("completeGames")
+    DOUBLES =                   Category("doubles")
+    EARNED_RUNS =               Category("earnedRuns")
+    FLY_OUTS =                  Category("flyOuts")
+    HOME_RUNS =                 Category("homeRuns")
+    GAMES_FINISHED =            Category("gamesFinished")
+    GAMES_PITCHED =             Category("gamesPitched")
+    GAMES_PLAYED =              Category("gamesPlayed")
+    GAMES_STARTED =             Category("gamesStarted")
+    GROUND_INTO_DOUBLE_PLAY =   Category("groundIntoDoublePlay")
+    GROUND_INTO_TRIPLE_PLAY =   Category("groundIntoTriplePlay")
+    GROUND_OUTS =               Category("groundOuts")
+    HITS =                      Category("hits")
+    HIT_BATSMEN =               Category("hitBatsmen")
+    HIT_BY_PITCH =              Category("hitByPitch")
+    HOLDS =                     Category("holds")
+    INHERITED_RUNNERS =         Category("inheritedRunners")
+    INHRETIED_RUNNERS_SCORED =  Category("inheritedRunnersScored")
+    INNINGS_PITCHED =           Category("inningsPitched")
+    INTENTIONAL_WALKS =         Category("intentionalWalks")
+    LEFT_ON_BASE =              Category("leftOnBase")
+    LOSSES =                    Category("losses")
+    NOTE =                      Category("note")
+    NUMBER_OF_PITCHES =         Category("numberOfPitches")
+    OUTS =                      Category("outs")
+    PICKOFFS =                  Category("pickoffs")
+    PITCHES_THROWN =            Category("pitchesThrown")
+    RBI =                       Category("rbi")
+    RUNS =                      Category("runs")
+    SAVE_OPPORTUNITIES =        Category("saveOpportunities")
+    SAC_BUNTS =                 Category("sacBunts")
+    SAC_FLIES =                 Category("sacFlies")
+    SAVES =                     Category("saves")
+    SHUTOUTS =                  Category("shutouts")
+    STOLEN_BASES =              Category("stolenBases")
+    STRIKES =                   Category("strikes")
+    STRIKE_OUTS =               Category("strikeOuts")
+    TRIPLES =                   Category("triples")
+    TOTAL_BASES =               Category("totalBases")
+    WILD_PITCHES =              Category("wildPitches")
+    WINS =                      Category("wins")
+
+    def get_pitchers_categories():
+        return [Categories.AIR_OUTS, Categories.AT_BATS, Categories.BALLS, Categories.BASE_ON_BALLS, Categories.BATTERS_FACED, Categories.BLOWN_SAVES, Categories.CATCHERS_INTERFERENCE, Categories.CAUGHT_STEALING, Categories.COMPLETE_GAMES, Categories.DOUBLES, Categories.EARNED_RUNS, Categories.GAMES_FINISHED, Categories.GAMES_PITCHED, Categories.GAMES_PLAYED, Categories.GAMES_STARTED, Categories.GROUND_OUTS, Categories.HIT_BATSMEN, Categories.HITS, Categories.HOLDS, Categories.HOME_RUNS, Categories.INHERITED_RUNNERS, Categories.INHRETIED_RUNNERS_SCORED, Categories.INNINGS_PITCHED, Categories.INTENTIONAL_WALKS, Categories.LOSSES, Categories.NUMBER_OF_PITCHES, Categories.OUTS, Categories.PICKOFFS, Categories.PITCHES_THROWN, Categories.RBI, Categories.RUNS, Categories.SAC_BUNTS, Categories.SAC_FLIES, Categories.SAVE_OPPORTUNITIES, Categories.SAVES, Categories.SHUTOUTS, Categories.STOLEN_BASES, Categories.STRIKE_OUTS, Categories.STRIKES, Categories.TRIPLES, Categories.WILD_PITCHES, Categories.WINS]
+    
+    def get_fielders_categories():
+        return [Categories.AT_BATS, Categories.BASE_ON_BALLS, Categories.CATCHERS_INTERFERENCE, Categories.CAUGHT_STEALING, Categories.DOUBLES, Categories.FLY_OUTS, Categories.GAMES_PLAYED, Categories.GROUND_INTO_DOUBLE_PLAY, Categories.GROUND_INTO_TRIPLE_PLAY, Categories.GROUND_OUTS, Categories.HIT_BY_PITCH, Categories.HITS, Categories.HOME_RUNS, Categories.INTENTIONAL_WALKS, Categories.LEFT_ON_BASE, Categories.PICKOFFS, Categories.RBI, Categories.RUNS, Categories.SAC_BUNTS, Categories.SAC_FLIES, Categories.STOLEN_BASES, Categories.STRIKE_OUTS, Categories.TOTAL_BASES, Categories.TRIPLES ]
+
+    def get_categories():
+        return [] + Categories.get_pitchers_categories() + Categories.get_fielders_categories()

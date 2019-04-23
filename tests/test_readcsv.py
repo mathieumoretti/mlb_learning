@@ -1,26 +1,19 @@
-import csv
 import os
 from os import walk
-
-from mlb_learning.player import Player
-from models.player import Player
+import sys
 
 script_dir = os.path.dirname(__file__) #<-- absolute dir the script is in
 root_dir = os.path.join(script_dir, '..')
 data_path = os.path.join(root_dir, 'data')
 
-def read_csv(filePath):
-    rows = []
-    with open(filePath, newline='') as csvfile:
-        playerreader = csv.reader(csvfile, delimiter=' ', quotechar='|')
-        for row in playerreader:
-            rows.append(row)
-            #print(', '.join(row))
-    
+sys.path.append(root_dir)
 
-    raw_logs = list(filter(None, rows))
-    print(raw_logs)
-    return raw_logs
+from utils import CsvReader
+
+NO_OF_FILES = 5
+players = []
+gamelogs = [] # list of gamelogs
+
 
 def collect_csv_files():
     f = []
@@ -28,19 +21,21 @@ def collect_csv_files():
         f.extend([os.path.join(dirpath,x) for x in filenames])        
     return f
 
+def test_readcsv():
+    files = collect_csv_files()
+    assert len(files) >= NO_OF_FILES
+    for filepath in files[0:NO_OF_FILES]:
 
-for filepath in collect_csv_files():
-    # maybe use regex
-    filename = os.path.splitext(os.path.basename(filepath))[0]
-    tokens = filename.split('_')
-    first_name = tokens[0]
-    last_name = tokens[1]
-    espn_id = tokens[2]
+        reader = CsvReader()
+        reader.deserialize(filepath)
+        players.append(reader.player)
+        for gamelog in reader.gamelogs:
+            gamelogs.append(gamelog)
 
-    player = models.Player()
-    player.first_name = first_name
-    player.last_name = last_name
-    player.espn_id = id
+    assert len(players) == NO_OF_FILES
+    assert len(gamelogs) >= NO_OF_FILES
 
-    logs = read_csv(filepath)
-    gamelogs = logs[1:]
+if __name__ == "__main__":
+    test_readcsv()
+
+
