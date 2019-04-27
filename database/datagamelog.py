@@ -15,11 +15,12 @@ class DataGamelog(some_base):
     player_id = Column(Integer, ForeignKey('player.id'))
     player = relationship("DataPlayer", back_populates="gamelogs")
    
-    def __init__(self, date, position, data_statline, player):
-            self.date = date
-            self.position = position
-            self.statline = data_statline
-            self.player = player
+    def __init__(self, gamelog, data_player, data_statline):
+        self.date = gamelog.date
+        self.position = gamelog.position
+        self.player = data_player
+        self.statline = data_statline
+
 
 #class Mobile(Base): #gamelog
 #    __tablename__ = 'mobile'

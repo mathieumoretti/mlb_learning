@@ -5,10 +5,11 @@ from models import Player
 from models import Statline
 from models import Gamelog
 
-class CsvReader():
+class CsvReader:
     def __init__(self, *args, **kwargs):
         self.player = None
-        self.gamelogs = []        
+        self.gamelogs = []
+        self.statlines = [] 
         return super().__init__()
 
     def _parse_filename(self, filepath):
@@ -34,9 +35,12 @@ class CsvReader():
                 assert len(stats) == len(categories_list)
                 d = dict(zip(categories_list, stats))
                 statline = Statline(d)
+                self.statlines.append(statline)
                 self.gamelogs.append(Gamelog(date, pos, self.player, statline))
 
     def deserialize(self, filepath):
         self._parse_filename(filepath)
         self._parse_file(filepath)
 
+
+    ## CSV_READERS

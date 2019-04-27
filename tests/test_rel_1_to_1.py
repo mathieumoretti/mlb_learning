@@ -15,6 +15,7 @@ from sqlalchemy.orm import sessionmaker
 from models import Statline
 from models import Gamelog
 
+from database import DataPlayer
 from database import DataGamelog
 from database import DataStatline
 
@@ -39,10 +40,10 @@ def session_factory():
 def populate_database():
     session = session_factory()
 
-    stat1 =  Statline()
+    stat1 =  Statline( dict(hits = 1) )
     data_statline1 = DataStatline(stat1)
 
-    stat2 =  Statline()
+    stat2 =  Statline(dict())
     stat2.categories["hits"] = 2
     data_statline2 = DataStatline(stat2)
 
@@ -51,14 +52,16 @@ def populate_database():
     gamelog1.position = "P"
     gamelog1.stats = stat1
 
-    data_gamelog1 = DataGamelog(gamelog1.date, gamelog1.position, data_statline1)
+    data_player = DataPlayer("JamesBond", "007")
+
+    data_gamelog1 = DataGamelog(gamelog1.date, gamelog1.position, data_player, data_statline1)
  
     gamelog2 = Gamelog()
     gamelog2.date = datetime.date(1900,1,2)
     gamelog2.position = "P"
     gamelog2.stats = stat2
 
-    data_gamelog2 = DataGamelog(gamelog2.date, gamelog2.position, data_statline2)
+    data_gamelog2 = DataGamelog(gamelog2.date, gamelog2.position, data_player, data_statline2)
 
     session.add(data_gamelog1)
     session.add(data_gamelog2)

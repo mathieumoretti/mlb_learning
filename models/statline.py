@@ -2,12 +2,12 @@ from .categories import Categories
 
 categories = Categories.get_categories()
 class Statline:
-
     def __init__(self, statdict):
         self.categories = dict.fromkeys(list(map(lambda x: x.name, categories)))
         self.reset()
         self.fill(statdict)
         return super().__init__()
+
     def reset(self):
         for category in categories:
             self.categories[category.name] = 0

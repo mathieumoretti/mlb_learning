@@ -1,5 +1,4 @@
 import os
-from os import walk
 import sys
 
 script_dir = os.path.dirname(__file__) #<-- absolute dir the script is in
@@ -9,20 +8,18 @@ data_path = os.path.join(root_dir, 'data')
 sys.path.append(root_dir)
 
 from utils import CsvReader
+from utils import CsvCollector
 
+#globals
 NO_OF_FILES = 5
 players = []
-gamelogs = [] # list of gamelogs
-
-
-def collect_csv_files():
-    f = []
-    for (dirpath, dirnames, filenames) in walk(data_path):
-        f.extend([os.path.join(dirpath,x) for x in filenames])        
-    return f
+gamelogs = [] 
+statlines = []
 
 def test_readcsv():
-    files = collect_csv_files()
+    collector = CsvCollector()
+    collector.collect(data_path)
+    files = collector.files
     assert len(files) >= NO_OF_FILES
     for filepath in files[0:NO_OF_FILES]:
 
@@ -32,8 +29,12 @@ def test_readcsv():
         for gamelog in reader.gamelogs:
             gamelogs.append(gamelog)
 
+        for statline in reader.statlines:
+            statlines.append(statline)
+
     assert len(players) == NO_OF_FILES
     assert len(gamelogs) >= NO_OF_FILES
+    assert len(statlines) == len(gamelogs)
 
 if __name__ == "__main__":
     test_readcsv()

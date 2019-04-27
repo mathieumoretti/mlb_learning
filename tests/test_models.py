@@ -21,8 +21,8 @@ DATE = datetime.date(1900,1,1)
 PLAYER_POS = "P"
 CATEGORY_NAME = "hits"
 
-def test_models():
 
+def test_models():
     category = Categories.HITS
     categories = Categories.get_categories()
     player = Player(PLAYER_NAME, PLAYER_ID)

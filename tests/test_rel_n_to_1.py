@@ -17,13 +17,13 @@ from sqlalchemy.orm import relationship
 
 from models import Gamelog
 from models import Player
+from models import Statline
 
 from database import DataGamelog
 from database import DataPlayer
+from database import DataStatline
 
 from database import DatabaseFactory
-
-
 
 database_filename = 'db.sqlite_test'
 database_dir = os.path.join(data_dir, 'database')
@@ -50,15 +50,19 @@ def populate_database():
 
 
     player1 = Player("James Bond", "007")
-    data_player1 = DataPlayer(player1.name,  player1.espn_id)
+    data_player1 = DataPlayer(player1)
 
     gamelog1 = Gamelog(datetime.date(1900,1,1),"P")
     gamelog1.player = player1
+    gamelog1.statline = Statline({})
     gamelog2 = Gamelog(datetime.date(1900,1,2),"P")
     gamelog2.player = player1
+    gamelog2.statline = Statline({})
 
-    data_gamelog1 = DataGamelog(gamelog1.date, gamelog1.position, None, data_player1)
-    data_gamelog2 = DataGamelog(gamelog2.date, gamelog2.position, None, data_player1)
+    data_statline1 = DataStatline(gamelog1.statline)
+    data_statline2 = DataStatline(gamelog2.statline)
+    data_gamelog1 = DataGamelog(gamelog1, data_player1, data_statline1)
+    data_gamelog2 = DataGamelog(gamelog2, data_player1, data_statline2)
 
     session.add(data_gamelog1)
     session.add(data_gamelog2)
