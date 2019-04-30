@@ -12,7 +12,7 @@ import pickle
 # TensorFlow and tf.keras
 import tensorflow as tf
 from tensorflow import keras
-
+import shutil
 
 file_name = os.path.basename(sys.argv[0])
 log_name = file_name.replace("py", "log")
@@ -34,6 +34,8 @@ tf.logging.set_verbosity(tf.logging.INFO)
 
 #Very simple predicitve model approach : https://medium.freecodecamp.org/a-beginners-guide-to-training-and-deploying-machine-learning-models-using-python-48a313502e5a
 # https://towardsdatascience.com/predicting-premier-league-odds-from-ea-player-bfdb52597392
+
+removed_headers = ["date","position","note","gamesPlayed"]
 
 
 class DNN:
@@ -68,11 +70,11 @@ class DNN:
 		test_labels = []
 		if(os.path.isdir(self.model_dir)):#Currently deleting model here on new training need to improve to keep training
 			logger.info("Deleting folder : {}".format(self.model_dir))
-			os.rmdir(self.model_dir)
+			shutil.rmtree(self.model_dir)
 		coldict = {}
 		col_names = pd.read_csv("H_training_data_{}.csv".format(self.num_of_games)).columns
 		for i in col_names:
-			coldict[i] = int
+			coldict[i] = float
 
 		train_df = pd.read_csv("H_training_data_{}.csv".format(self.num_of_games),dtype=coldict)
 		for idx,cols in enumerate(col_names):
@@ -94,8 +96,9 @@ class DNN:
 
 		#Magic happens here
 		#model = tf.estimator.DNNClassifier( model_dir='model/',hidden_units=[23*8],feature_columns=feature_columns, n_classes=2,optimizer=tf.train.ProximalAdagradOptimizer(learning_rate=0.1,l1_regularization_strength=0.001))
-		model = tf.estimator.DNNClassifier( model_dir=self.model_dir,hidden_units=[23*self.num_of_games],feature_columns=feature_columns, n_classes=2,
-			optimizer=tf.train.ProximalAdagradOptimizer(learning_rate=0.1,l1_regularization_strength=0.001)
+		model = tf.estimator.DNNClassifier( model_dir=self.model_dir,hidden_units=[55*self.num_of_games],feature_columns=feature_columns, n_classes=2,
+			#optimizer=tf.train.ProximalAdagradOptimizer(learning_rate=0.1,l1_regularization_strength=0.001)
+			optimizer=tf.train.AdamOptimizer(learning_rate=0.1)
 			)
 
 		train_input_fn = tf.estimator.inputs.numpy_input_fn(x=train_features,y=train_labels,batch_size=32,num_epochs=100,shuffle=True)
@@ -112,7 +115,7 @@ class DNN:
 		coldict = {}
 		col_names = pd.read_csv("H_testing_data_{}.csv".format(self.num_of_games), nrows=0).columns
 		for i in col_names:
-			coldict[i] = int
+			coldict[i] = float
 
 		test_df = pd.read_csv("H_testing_data_{}.csv".format(self.num_of_games),dtype=coldict)
 		for idx,cols in enumerate(col_names):
@@ -125,9 +128,9 @@ class DNN:
 		for idx,cols in enumerate(col_names):
 			if(cols != "official_result" and cols != 'Unnamed: 0'):
 				feature_columns.append(tf.feature_column.numeric_column(key=cols))
-		print(test_features)
-		model = tf.estimator.DNNClassifier( model_dir='model',hidden_units=[23*self.num_of_games],feature_columns=feature_columns, n_classes=2,
-		optimizer=tf.train.ProximalAdagradOptimizer(learning_rate=0.1,l1_regularization_strength=0.001)
+		model = tf.estimator.DNNClassifier( model_dir=self.model_dir,hidden_units=[55*self.num_of_games],feature_columns=feature_columns, n_classes=2,
+		#optimizer=tf.train.ProximalAdagradOptimizer(learning_rate=0.1,l1_regularization_strength=0.001)
+		optimizer=tf.train.AdamOptimizer(learning_rate=0.1)
 		)
 		test_input_fn = tf.estimator.inputs.numpy_input_fn(x=test_features,shuffle = False)
 		prediction = model.predict(test_input_fn)
@@ -137,7 +140,7 @@ class DNN:
 	def predict(self,data_to_predict):#not tested placeholder for predict implementation
 
 
-		model = tf.estimator.DNNClassifier( model_dir=self.model_dir,hidden_units=[23*self.num_of_games],feature_columns=feature_columns, n_classes=2,
+		model = tf.estimator.DNNClassifier( model_dir=self.model_dir,hidden_units=[55*self.num_of_games],feature_columns=feature_columns, n_classes=2,
 		optimizer=tf.train.ProximalAdagradOptimizer(learning_rate=0.1,l1_regularization_strength=0.001)
 		)
 		test_input_fn = tf.estimator.inputs.numpy_input_fn(x=data_to_predict,shuffle = False)
@@ -173,7 +176,7 @@ def evaluate_scores(probability_list,hits):
 def return_data_P_one_row(dct):
 	data_list = []
 	for i in dct:
-		if(i != "date" and i != "position" and i != "note"and i != "gamesPlayed"and i):
+		if(i not in removed_headers and i):
 			data_list.append(dct[i])
 	return data_list
 
@@ -183,7 +186,7 @@ def return_data_P_one_header(dct,lenght):
 	for counter in range(lenght):
 		temp_list = []
 		for i in dct:
-			if(i != "date" and i != "position" and i != "note"and i != "gamesPlayed"and i):
+			if(i not in removed_headers and i):
 				temp_list.append(i+str(counter))
 		header_list = header_list + temp_list
 	return header_list
@@ -191,7 +194,7 @@ def return_data_P_one_header(dct,lenght):
 def return_data_H_one_row(dct):
 	data_list = []
 	for i in sorted(dct):
-		if(i != "date" and i != "position" and i != "note"and i != "gamesPlayed"and i):
+		if(i not in removed_headers and i):
 			data_list.append(dct[i])
 	return data_list
 
@@ -202,7 +205,7 @@ def return_data_H_one_header(dct,lenght):
 	for counter in range(lenght):
 		temp_list = []
 		for i in sorted(dct):
-			if(i != "date" and i != "position" and i != "note"and i != "gamesPlayed"and i):
+			if(i not in removed_headers and i):
 				temp_list.append(i+str(counter))
 		header_list = header_list + temp_list
 	return header_list
@@ -250,7 +253,7 @@ def read_data_one_file(lenght,filename,output_file):
 				return
 			else:
 				position = "H"
-				if(len(dct) > 26):
+				if(len(dct) > 58):
 					return
 				data_list = return_data_H_one_row(dct)
 				#print("data_list" + str(data_list))

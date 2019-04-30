@@ -6,3 +6,25 @@ As of right now i have tried:
 Everything is pretty bad.
 
 I think there is an issue with the way im cleaning the data im making it more complicated than it should be...
+
+5 games with added pitcher data
+		model = tf.estimator.DNNClassifier( model_dir=self.model_dir,hidden_units=[55*self.num_of_games],feature_columns=feature_columns, n_classes=2,
+			optimizer=tf.train.ProximalAdagradOptimizer(learning_rate=0.1,l1_regularization_strength=0.001)
+			)
+
+		train_input_fn = tf.estimator.inputs.numpy_input_fn(x=train_features,y=train_labels,batch_size=32,num_epochs=100,shuffle=True)
+		test_input_fn = tf.estimator.inputs.numpy_input_fn(x=test_features,y=test_labels,batch_size=32,num_epochs=100,shuffle=True)
+
+
+accuracy = 0.59207416, accuracy_baseline = 0.5861345, auc = 0.59402543, auc_precision_recall = 0.4891418, average_loss = 0.6647712, global_step = 458055, label/mean = 0.4138655, loss = 21.272678, precision = 0.5270863, prediction/mean = 0.40241045, recall = 0.13963789
+2019-04-28 21:21:08,732 | DNN |  INFO: Accuracy when not predicting 0 : 0.4174326138593411
+2019-04-28 21:21:08,733 | DNN |  INFO: Accuracy when predicting 0 : 0.5869846505137638
+
+5 games with added pitcher data and older games :
+2019-04-29 08:43:50,204 | DNN |  INFO: Accuracy when not predicting 0 : 0.5367935208569189
+2019-04-29 08:43:50,212 | DNN |  INFO: Accuracy when predicting 0 : 0.5836247137963473
+
+same as above without optimizer : 
+2019-04-29 14:35:30,906 | DNN |  INFO: Accuracy when not predicting 0 : 0.5132708541994563
+2019-04-29 14:35:30,907 | DNN |  INFO: Accuracy when predicting 0 : 0.6168857228855222
+same as above Adam optimizer

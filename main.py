@@ -47,6 +47,7 @@ start = time.time()
 
 if __name__ == "__main__":
 	MLB_NN = DNN(args.number_of_games_previous)
+	#os.system("python mlb_stats.py")
 	MLB_NN.clean_data()
 	MLB_NN.train()
 	MLB_NN.evaluate()
