@@ -32,7 +32,7 @@ class CsvReader:
                 date = gamelog[0]
                 pos = gamelog[1]
                 stats = gamelog[2:]
-                assert len(stats) <= len(categories_list)
+                #assert len(stats) <= len(categories_list)
                 d = dict(zip(categories_list, stats))
                 statline = Statline(d)
                 self.statlines.append(statline)

@@ -25,7 +25,6 @@ from utils import CsvReader
 from utils import CsvCollector
 
 #globals
-NO_OF_FILES = 5
 gamelogs = [] 
 
 database_filename = 'db.sqlite_main'
@@ -47,17 +46,20 @@ def session_factory():
     return _SessionFactory()
 
 def collect_csv_files():
+    print("collecting csv files.")
     collector = CsvCollector()
     collector.collect(data_dir)
     return collector.files
 
 def parse_csv_files(files):
+    print("parsing csv files.")
     for filepath in files[0:len(files)]:
         reader = CsvReader()
         reader.deserialize(filepath)        
         gamelogs.extend(reader.gamelogs) # could convert to a set
 
 def populate_database(gl):
+    print("populating database.")
     session = session_factory()
 
     data_players = {}
@@ -71,16 +73,14 @@ def populate_database(gl):
             data_players[g.player.espn_id] = data_player
 
         session.add(DataGamelog(g, data_player, data_statline))
-
+        print("Populating player {}'s gamelog on {}".format(data_player.name, g.date))
     session.commit()
     session.close()
 
 
 def test_database():
     files = collect_csv_files()
-    #assert len(files) >= NO_OF_FILES 
     parse_csv_files(files)
-    #assert len(gamelogs) >= 0
     populate_database(gamelogs)
 
    # users = query_users()
