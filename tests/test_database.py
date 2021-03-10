@@ -1,6 +1,6 @@
 import datetime
 import os
-from os import walk
+from os import SEEK_CUR, walk
 import sys
 
 script_dir = os.path.dirname(__file__) #<-- absolute dir the script is in
@@ -22,7 +22,6 @@ engine = create_engine(db_uri)
 # use session_factory() to get a new Session
 _SessionFactory = sessionmaker(bind=engine)
 
-
 from models import Categories
 from models import Player
 from models import Gamelog
@@ -32,7 +31,6 @@ from database import DataGamelog
 from database import DataStatline
 from database import DatabaseFactory
 
-
 some_base = DatabaseFactory.Base
 
 def session_factory():
@@ -40,61 +38,49 @@ def session_factory():
     return _SessionFactory()
 
 
-class Mobile(some_base): #gamelog
-    __tablename__ = 'mobile'
-
-    id = Column(Integer, primary_key=True)
-    model = Column(String)
-    number = Column(String)
-    owner_id = Column(Integer, ForeignKey('user.id'))
-
-    def __init__(self, model, number, owner):
-        self.model = model
-        self.number = number
-        self.owner = owner
-
-class User(some_base): #statline
-    __tablename__ = 'user'
-
-    id = Column(Integer, primary_key=True)
-    name = Column(String)
-    mobile = relationship("Mobile", uselist=False, backref="owner")
-
-    def __init__(self, name):
-        self.name = name
-
-
-def populate_database():
-    session = session_factory()
-
-    bruno = User("Bruno Krebs")
-    john = User("John Doe")
-
-    brunos_mobile = Mobile("android", "99991111", bruno)
-    johns_mobile = Mobile("iphone", "55554444", john)
-
-    session.add(brunos_mobile)
-    session.add(johns_mobile)
-
-    session.commit()
-    session.close()
-
-
-def query_users():
-    session = session_factory()
-    users_query = session.query(User)
-    session.close()
-    return users_query.all()
-
-
-def query_mobiles():
-    session = session_factory()
-    mobiles_query = session.query(Mobile)
-    session.close()
-    return mobiles_query.all()
-
-
 def test_database():
+    # Clean-all
+    session = session_factory()
+    session.query(DataPlayer).delete()
+    
+    # Create
+    jamesBond = Player("James Bond", 7)
+    data_player1 = DataPlayer(jamesBond.name,  jamesBond.espn_id)
+
+    alecTrevalian = Player("Alec Trevalian", 6)
+    data_player2 = DataPlayer(alecTrevalian.name,  alecTrevalian.espn_id)
+
+    austinPowers = Player("Austin Powers", 69)
+    data_player3 = DataPlayer(austinPowers.name,  austinPowers.espn_id)
+
+
+    session.add(data_player1)
+    session.add(data_player2)
+    session.commit()
+
+    # Read    
+    players = session.query(DataPlayer).all()
+    assert players[0].name == jamesBond.name
+    assert players[0].espn_id == jamesBond.espn_id
+    assert players[1].name == alecTrevalian.name
+    assert players[1].espn_id == alecTrevalian.espn_id
+
+    # Update
+    session.query(DataPlayer).filter(DataPlayer.espn_id == jamesBond.espn_id).update({"name": data_player3.name, "espn_id" : data_player3.espn_id})
+    session.commit()
+    players = session.query(DataPlayer).all()
+    assert players[0].name == austinPowers.name
+    assert players[0].espn_id == austinPowers.espn_id
+
+    # Delete
+    session.delete(players[0])    
+    players = session.query(DataPlayer).all()
+    assert players[0].name == alecTrevalian.name
+    assert players[0].espn_id == alecTrevalian.espn_id
+
+    session.delete(players[0])   
+    assert session.query(DataPlayer).filter_by(name=alecTrevalian.name).count() == 0
+    session.close()
 
     #category = Categories.HITS
 
@@ -133,7 +119,7 @@ def test_database():
 
 
 
-    users = query_users()
+    ##users = query_users()
 
 
 

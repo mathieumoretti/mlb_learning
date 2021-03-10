@@ -12,8 +12,7 @@ class DataGamelog(some_base):
     date = Column(String)
     position = Column(String)
     statline_id = Column(Integer, ForeignKey('statline.id'))
-    player_id = Column(Integer, ForeignKey('player.id'))
-    player = relationship("DataPlayer", back_populates="gamelogs")
+    player_id = Column(Integer, ForeignKey('player.id'))    
    
     def __init__(self, date, position, data_statline, player):
             self.date = date

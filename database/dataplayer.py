@@ -9,19 +9,8 @@ class DataPlayer(some_base):
     __tablename__ = 'player'
     id = Column(Integer, primary_key=True)
     name = Column(String)
-    espn_id = Column(Integer)
-    gamelogs = relationship("DataGamelog", back_populates="player")
+    espn_id = Column(Integer)    
 
     def __init__(self, name, espn_id):
         self.name = name
         self.espn_id = espn_id
-
-#class ProjectManager(Base): #Player
-#    __tablename__ = 'project_manager'
-
-#    id = Column(Integer, primary_key=True)
-#    name = Column(String)
-#    projects = relationship("Project", back_populates="project_manager")
-
-#    def __init__(self, name):
-#        self.name = name
