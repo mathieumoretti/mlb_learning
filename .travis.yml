@@ -1,9 +1,13 @@
 language: python
 python:
-  - "3.6"
+  - "3.8"
 # command to install dependencies
 install:
   - pip install -r requirements.txt
 # command to run tests
+before_script:
+  - alembic upgrade head
+after_script:
+  - alembic downgrade base
 script:
-  - pytest
+  - pytest tests/

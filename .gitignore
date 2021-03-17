@@ -109,3 +109,10 @@ venv.bak/
 # this project
 /data
 db.sqlite*
+
+#virtualenv
+/Scripts
+pyvenv.cfg
+
+#vscode
+.vscode
