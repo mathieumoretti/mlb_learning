@@ -10,4 +10,4 @@ before_script:
 after_script:
   - alembic downgrade base
 script:
-  - pytest tests/
+  - python setup.py pytest --addopts tests/test_sample.py 
