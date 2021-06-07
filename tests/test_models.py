@@ -1,20 +1,10 @@
 import datetime
-import os
-from os import walk
-import sys
 
-script_dir = os.path.dirname(__file__) #<-- absolute dir the script is in
-root_dir = os.path.join(script_dir, '..')
-data_path = os.path.join(root_dir, 'data')
-
-sys.path.append(root_dir)
-
-
-from models import Categories
-from models import Gamelog
-from models import Player
-from models import Positions
-from models import Statline
+from mlb_learning.models import Categories
+from mlb_learning.models import Gamelog
+from mlb_learning.models import Player
+from mlb_learning.models import Positions
+from mlb_learning.models import Statline
 
 PLAYER_NAME = "James Bond"
 PLAYER_ID = "007"
