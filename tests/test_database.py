@@ -22,10 +22,10 @@ engine = create_engine(db_uri)
 # use session_factory() to get a new Session
 _SessionFactory = sessionmaker(bind=engine)
 
-from models import Categories
-from models import Player
-from models import Gamelog
-from models import Statline
+from mlb_learning.models import Categories
+from mlb_learning.models import Player
+from mlb_learning.models import Gamelog
+from mlb_learning.models import Statline
 from database import DataPlayer
 from database import DataGamelog
 from database import DataStatline
@@ -42,6 +42,7 @@ def test_database():
     # Clean-all
     session = session_factory()
     session.query(DataPlayer).delete()
+    session.query(DataStatline).delete()
     
     # Create
     jamesBond = Player("James Bond", 7)
@@ -53,9 +54,13 @@ def test_database():
     austinPowers = Player("Austin Powers", 69)
     data_player3 = DataPlayer(austinPowers.name,  austinPowers.espn_id)
 
-
+    statline = Statline(dict(hits = 1))
+    data_statline = DataStatline(statline)
+    
     session.add(data_player1)
     session.add(data_player2)
+    session.add(data_statline)
+
     session.commit()
 
     # Read    
@@ -65,12 +70,20 @@ def test_database():
     assert players[1].name == alecTrevalian.name
     assert players[1].espn_id == alecTrevalian.espn_id
 
+    statlines = session.query(DataStatline).all()
+    assert statlines[0].hits == statline.categories[Categories.HITS.name]
+    
     # Update
     session.query(DataPlayer).filter(DataPlayer.espn_id == jamesBond.espn_id).update({"name": data_player3.name, "espn_id" : data_player3.espn_id})
+    
+    session.query(DataStatline).filter(DataStatline.hits == 1).update({"hits": 2})
     session.commit()
     players = session.query(DataPlayer).all()
     assert players[0].name == austinPowers.name
     assert players[0].espn_id == austinPowers.espn_id
+
+    statlines = session.query(DataStatline).all()
+    assert statlines[0].hits == 2
 
     # Delete
     session.delete(players[0])    
@@ -80,6 +93,9 @@ def test_database():
 
     session.delete(players[0])   
     assert session.query(DataPlayer).filter_by(name=alecTrevalian.name).count() == 0
+    
+    session.delete(statlines[0])   
+    assert session.query(DataStatline).filter_by(hits=2).count() == 0
     session.close()
 
     #category = Categories.HITS
