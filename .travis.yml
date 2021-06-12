@@ -4,10 +4,12 @@ python:
 # command to install dependencies
 install:
   - pip install -r requirements.txt
+  - python -m build
+  - pip install --editable .
 # command to run tests
 before_script:
   - alembic upgrade head
 after_script:
   - alembic downgrade base
 script:
-  - python setup.py pytest --addopts tests/test_sample.py 
+  - pytest tests/
