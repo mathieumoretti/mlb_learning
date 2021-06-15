@@ -1,4 +1,4 @@
-import datetime
+from datetime import date
 import os
 from os import SEEK_CUR, walk
 import sys
@@ -22,6 +22,7 @@ engine = create_engine(db_uri)
 # use session_factory() to get a new Session
 _SessionFactory = sessionmaker(bind=engine)
 
+from mlb_learning.models import Positions
 from mlb_learning.models import Categories
 from mlb_learning.models import Player
 from mlb_learning.models import Gamelog
@@ -43,6 +44,7 @@ def test_database():
     session = session_factory()
     session.query(DataPlayer).delete()
     session.query(DataStatline).delete()
+    session.query(DataGamelog).delete()
     
     # Create
     jamesBond = Player("James Bond", 7)
@@ -57,9 +59,17 @@ def test_database():
     statline = Statline(dict(hits = 1))
     data_statline = DataStatline(statline)
     
+    position = Positions.PITCHER
+    # dd/mm/YY
+    today = date.today()    
+    todayStr = today.strftime("%d/%m/%Y")
+    gamelog = Gamelog(todayStr, position)
+    data_gamelog = DataGamelog(gamelog.date, gamelog.position.name)
+
     session.add(data_player1)
     session.add(data_player2)
     session.add(data_statline)
+    session.add(data_gamelog)
 
     session.commit()
 
@@ -73,17 +83,25 @@ def test_database():
     statlines = session.query(DataStatline).all()
     assert statlines[0].hits == statline.categories[Categories.HITS.name]
     
+    gamelogs = session.query(DataGamelog).all()
+    assert gamelogs[0].date == todayStr
+    assert gamelogs[0].position == gamelog.position.name
+
     # Update
     session.query(DataPlayer).filter(DataPlayer.espn_id == jamesBond.espn_id).update({"name": data_player3.name, "espn_id" : data_player3.espn_id})
-    
     session.query(DataStatline).filter(DataStatline.hits == 1).update({"hits": 2})
+    session.query(DataGamelog).filter(DataGamelog.position == Positions.PITCHER.name).update({"position": Positions.BATTER.name})
     session.commit()
+
     players = session.query(DataPlayer).all()
     assert players[0].name == austinPowers.name
     assert players[0].espn_id == austinPowers.espn_id
 
     statlines = session.query(DataStatline).all()
     assert statlines[0].hits == 2
+
+    gamelogs = session.query(DataGamelog).all()
+    assert gamelogs[0].position == Positions.BATTER.name
 
     # Delete
     session.delete(players[0])    
@@ -96,6 +114,10 @@ def test_database():
     
     session.delete(statlines[0])   
     assert session.query(DataStatline).filter_by(hits=2).count() == 0
+    
+    session.delete(gamelogs[0])   
+    assert session.query(DataGamelog).filter_by(position=Positions.BATTER.name).count() == 0
+    
     session.close()
 
     #category = Categories.HITS

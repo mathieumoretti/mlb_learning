@@ -11,14 +11,14 @@ class DataGamelog(some_base):
     id = Column(Integer, primary_key=True)
     date = Column(String)
     position = Column(String)
-    statline_id = Column(Integer, ForeignKey('statline.id'))
-    player_id = Column(Integer, ForeignKey('player.id'))    
+    #statline_id = Column(Integer, ForeignKey('statline.id'))
+    #player_id = Column(Integer, ForeignKey('player.id'))    
    
-    def __init__(self, date, position, data_statline, player):
+    def __init__(self, date, position): #, data_statline, player):
             self.date = date
             self.position = position
-            self.statline = data_statline
-            self.player = player
+            #self.statline = data_statline
+            #self.player = player
 
 #class Mobile(Base): #gamelog
 #    __tablename__ = 'mobile'
