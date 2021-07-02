@@ -5,6 +5,13 @@ from sqlalchemy import pool
 
 from alembic import context
 
+import os
+import sys
+
+alembic_dir = os.path.dirname(__file__) #<-- absolute dir the script is in
+root_dir = os.path.join(alembic_dir, '..')
+sys.path.append(root_dir)
+
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
@@ -15,9 +22,9 @@ fileConfig(config.config_file_name)
 
 # add your model's MetaData object here
 # for 'autogenerate' support
-# from myapp import mymodel
+from database import DatabaseFactory
 # target_metadata = mymodel.Base.metadata
-target_metadata = None
+target_metadata = DatabaseFactory.Base.metadata
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:
