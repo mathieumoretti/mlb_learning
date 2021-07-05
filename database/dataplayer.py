@@ -8,7 +8,7 @@ some_base = DatabaseFactory.Base
 class DataPlayer(some_base):
     __tablename__ = 'player'
     id = Column(Integer, primary_key=True)
-    name = Column(String)
+    name = Column(String, nullable=False, default="")
     espn_id = Column(Integer, nullable=False, default=-1)    
 
     def __init__(self, name, espn_id):
